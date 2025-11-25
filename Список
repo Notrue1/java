@@ -1,0 +1,84 @@
+public class List {
+    private Object[] elements;
+    private int currentSize;
+    
+    public List() {
+        this.elements = new Object[10];
+        this.currentSize = 0;
+    }
+    
+    public void append(Object element) {
+        if (currentSize == elements.length) {
+            expandCapacity();
+        }
+        elements[currentSize++] = element;
+    }
+    
+    public Object retrieve(int position) {
+        if (position < 0 || position >= currentSize) {
+            throw new IndexOutOfBoundsException("Invalid position: " + position);
+        }
+        return elements[position];
+    }
+    
+    public Object delete(int position) {
+        if (position < 0 || position >= currentSize) {
+            throw new IndexOutOfBoundsException("Invalid position: " + position);
+        }
+        Object deletedElement = elements[position];
+        for (int i = position; i < currentSize - 1; i++) {
+            elements[i] = elements[i + 1];
+        }
+        elements[--currentSize] = null;
+        return deletedElement;
+    }
+    
+    public int length() {
+        return currentSize;
+    }
+    
+    public boolean isListEmpty() {
+        return currentSize == 0;
+    }
+    
+    private void expandCapacity() {
+        Object[] newArray = new Object[elements.length * 2];
+        for (int i = 0; i < currentSize; i++) {
+            newArray[i] = elements[i];
+        }
+        elements = newArray;
+    }
+    
+    @Override
+    public String toString() {
+        if (currentSize == 0) return "[]";
+        
+        StringBuilder result = new StringBuilder("[");
+        for (int i = 0; i < currentSize; i++) {
+            result.append(elements[i]);
+            if (i < currentSize - 1) result.append(", ");
+        }
+        result.append("]");
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        List myList = new List();
+        
+        myList.append("Процессор");
+        myList.append("Материнская плата");
+        myList.append("Оперативная память");
+        myList.append("Видеокарта");
+        myList.append("SSD накопитель");
+        
+        System.out.println("Комплектующие ПК: " + myList);
+        System.out.println("Количество компонентов: " + myList.length());
+        System.out.println("Компонент 2: " + myList.retrieve(2));
+        
+        myList.delete(1);
+        System.out.println("После удаления материнской платы: " + myList);
+        
+        myList.append("Блок питания");
+        System.out.println("После добавления блока питания: " + myList);
+    }
+}
