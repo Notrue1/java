@@ -1,0 +1,92 @@
+public class Set {
+    private Object[] elements;
+    private int elementCount;
+    
+    public Set() {
+        this.elements = new Object[10];
+        this.elementCount = 0;
+    }
+    
+    public boolean insert(Object element) {
+        if (hasElement(element)) {
+            return false;
+        }
+        if (elementCount == elements.length) {
+            increaseCapacity();
+        }
+        elements[elementCount++] = element;
+        return true;
+    }
+    
+    public boolean delete(Object element) {
+        for (int i = 0; i < elementCount; i++) {
+            if (element == null ? elements[i] == null : element.equals(elements[i])) {
+                for (int j = i; j < elementCount - 1; j++) {
+                    elements[j] = elements[j + 1];
+                }
+                elements[--elementCount] = null;
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean hasElement(Object element) {
+        for (int i = 0; i < elementCount; i++) {
+            if (element == null ? elements[i] == null : element.equals(elements[i])) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public int getSize() {
+        return elementCount;
+    }
+    
+    public boolean isSetEmpty() {
+        return elementCount == 0;
+    }
+    
+    private void increaseCapacity() {
+        Object[] newArray = new Object[elements.length * 2];
+        for (int i = 0; i < elementCount; i++) {
+            newArray[i] = elements[i];
+        }
+        elements = newArray;
+    }
+    
+    @Override
+    public String toString() {
+        if (elementCount == 0) return "{}";
+        
+        StringBuilder result = new StringBuilder("{");
+        for (int i = 0; i < elementCount; i++) {
+            result.append(elements[i]);
+            if (i < elementCount - 1) result.append(", ");
+        }
+        result.append("}");
+        return result.toString();
+    }
+
+    public static void main(String[] args) {
+        Set componentSet = new Set();
+        
+        componentSet.insert("Процессор");
+        componentSet.insert("Материнская плата");
+        componentSet.insert("Оперативная память");
+        componentSet.insert("Материнская плата");
+        
+        System.out.println("Комплектующие: " + componentSet);
+        System.out.println("Количество: " + componentSet.getSize());
+        System.out.println("Есть видеокарта: " + componentSet.hasElement("Видеокарта"));
+        System.out.println("Есть процессор: " + componentSet.hasElement("Процессор"));
+        
+        componentSet.delete("Материнская плата");
+        System.out.println("После удаления: " + componentSet);
+        
+        componentSet.insert("SSD");
+        componentSet.insert("Блок питания");
+        System.out.println("С новыми компонентами: " + componentSet);
+    }
+}
