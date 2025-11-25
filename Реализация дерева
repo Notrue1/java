@@ -1,0 +1,72 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class Tree {
+    private TreeNode root;
+    
+    static class TreeNode {
+        int val;
+        List<TreeNode> childNodes = new ArrayList<>();
+        
+        TreeNode(int val) {
+            this.val = val;
+        }
+    }
+    
+    public void createRoot(int val) {
+        root = new TreeNode(val);
+    }
+    
+    public void attachChild(int parentVal, int childVal) {
+        TreeNode parentNode = locateNode(root, parentVal);
+        if (parentNode != null) {
+            parentNode.childNodes.add(new TreeNode(childVal));
+        }
+    }
+    
+    private TreeNode locateNode(TreeNode node, int val) {
+        if (node == null) return null;
+        if (node.val == val) return node;
+        
+        for (TreeNode child : node.childNodes) {
+            TreeNode result = locateNode(child, val);
+            if (result != null) return result;
+        }
+        return null;
+    }
+    
+    public void display() {
+        displayTree(root, "");
+    }
+    
+    private void displayTree(TreeNode node, String indent) {
+        if (node != null) {
+            System.out.println(indent + node.val);
+            for (TreeNode child : node.childNodes) {
+                displayTree(child, indent + "  ");
+            }
+        }
+    }
+    
+    public boolean hasValue(int val) {
+        return locateNode(root, val) != null;
+    }
+
+    public static void main(String[] args) {
+        Tree tree = new Tree();
+        
+        tree.createRoot(1);
+        tree.attachChild(1, 2);
+        tree.attachChild(1, 3);
+        tree.attachChild(2, 4);
+        tree.attachChild(2, 5);
+        tree.attachChild(3, 6);
+        
+        System.out.println("Структура дерева:");
+        tree.display();
+        
+        System.out.println("\nПоиск значений:");
+        System.out.println("Найден 5? " + tree.hasValue(5));
+        System.out.println("Найден 10? " + tree.hasValue(10));
+    }
+}
