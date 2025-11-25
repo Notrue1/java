@@ -1,0 +1,183 @@
+public class LIFOContainer {
+    private int currentPosition;
+    private int[] dataStorage;
+    
+    /**
+     * Конструктор по умолчанию - создает контейнер начального размера
+     */
+    public LIFOContainer() {
+        this(10);
+    }
+    
+    /**
+     * Конструктор с заданной начальной емкостью
+     * @param initialSize начальный размер внутреннего хранилища
+     */
+    public LIFOContainer(int initialSize) {
+        if (initialSize <= 0) {
+            initialSize = 10;
+        }
+        this.currentPosition = -1;
+        this.dataStorage = new int[initialSize];
+    }
+    
+    /**
+     * Сбрасывает состояние контейнера к первоначальному
+     */
+    public void reset() {
+        currentPosition = -1;
+    }
+    
+    /**
+     * Добавляет новый элемент в контейнер
+     * @param value значение для добавления
+     */
+    public void add(int value) {
+        if (currentPosition == dataStorage.length - 1) {
+            increaseCapacity();
+        }
+        dataStorage[++currentPosition] = value;
+    }
+    
+    /**
+     * Извлекает и удаляет последний добавленный элемент
+     * @return извлеченное значение или минимальное int при ошибке
+     */
+    public int remove() {
+        if (isContainerEmpty()) {
+            System.out.println("Ошибка: контейнер пуст!");
+            return Integer.MIN_VALUE;
+        }
+        return dataStorage[currentPosition--];
+    }
+    
+    /**
+     * Проверяет пустоту контейнера
+     * @return true если контейнер пуст
+     */
+    public boolean isContainerEmpty() {
+        return currentPosition < 0;
+    }
+    
+    /**
+     * Показывает содержимое контейнера в консоли
+     */
+    public void printContents() {
+        if (isContainerEmpty()) {
+            System.out.println("Контейнер пуст");
+            return;
+        }
+        
+        System.out.println("Элементы контейнера (сверху вниз):");
+        for (int i = currentPosition; i >= 0; i--) {
+            System.out.println("  [" + dataStorage[i] + "]");
+        }
+    }
+    
+    /**
+     * Возвращает последний добавленный элемент без удаления
+     * @return значение верхнего элемента
+     */
+    public int checkTop() {
+        if (isContainerEmpty()) {
+            System.out.println("Ошибка: контейнер пуст!");
+            return Integer.MIN_VALUE;
+        }
+        return dataStorage[currentPosition];
+    }
+    
+    /**
+     * Возвращает текущее количество элементов
+     * @return количество элементов в контейнере
+     */
+    public int getElementCount() {
+        return currentPosition + 1;
+    }
+    
+    /**
+     * Увеличивает емкость внутреннего хранилища в 2 раза
+     */
+    private void increaseCapacity() {
+        int newSize = dataStorage.length * 2;
+        int[] newStorage = new int[newSize];
+        
+        for (int i = 0; i < dataStorage.length; i++) {
+            newStorage[i] = dataStorage[i];
+        }
+        
+        dataStorage = newStorage;
+        System.out.println("Вместимость увеличена до " + newSize + " элементов");
+    }
+    
+    /**
+     * Очищает контейнер от всех элементов
+     */
+    public void empty() {
+        currentPosition = -1;
+    }
+    
+    /**
+     * Строковое представление контейнера
+     * @return строка с содержимым контейнера
+     */
+    @Override
+    public String toString() {
+        if (isContainerEmpty()) {
+            return "LIFOContainer{пуст}";
+        }
+        
+        StringBuilder result = new StringBuilder("LIFOContainer{");
+        for (int i = 0; i <= currentPosition; i++) {
+            result.append(dataStorage[i]);
+            if (i < currentPosition) {
+                result.append(" ← ");
+            }
+        }
+        result.append("}");
+        return result.toString();
+    }
+
+    // Демонстрация работы контейнера
+    public static void main(String[] args) {
+        LIFOContainer container = new LIFOContainer();
+        container.reset();
+        
+        System.out.println("=== ДЕМОНСТРАЦИЯ РАБОТЫ LIFO КОНТЕЙНЕРА ===\n");
+        
+        System.out.println("1. Добавляем несколько значений:");
+        container.add(5);
+        container.add(15);
+        container.add(25);
+        container.printContents();
+        
+        System.out.println("\n2. Смотрим верхний элемент:");
+        System.out.println("Верхний: " + container.checkTop());
+        
+        System.out.println("\n3. Извлекаем один элемент:");
+        int removedValue = container.remove();
+        System.out.println("Извлечено: " + removedValue);
+        container.printContents();
+        
+        System.out.println("\n4. Проверяем количество элементов:");
+        System.out.println("Всего элементов: " + container.getElementCount());
+        
+        System.out.println("\n5. Тестируем автоматическое расширение:");
+        for (int i = 1; i <= 12; i++) {
+            container.add(i * 7);
+        }
+        container.printContents();
+        System.out.println("Текущий размер: " + container.getElementCount());
+        
+        System.out.println("\n6. Последовательное извлечение всех элементов:");
+        while (!container.isContainerEmpty()) {
+            System.out.println("Извлечено: " + container.remove());
+        }
+        
+        System.out.println("\n7. Попытка извлечь из пустого контейнера:");
+        container.remove();
+        
+        System.out.println("\n8. Финальная проверка состояния:");
+        System.out.println("Контейнер пуст: " + container.isContainerEmpty());
+        System.out.println("Содержимое: " + container.toString());
+    }
+}
