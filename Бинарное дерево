@@ -1,0 +1,93 @@
+public class BinaryTree {
+    private TreeNode root;
+    
+    static class TreeNode {
+        int data;
+        TreeNode leftChild;
+        TreeNode rightChild;
+        
+        TreeNode(int data) {
+            this.data = data;
+        }
+    }
+    
+    public void insert(int data) {
+        root = insertNode(root, data);
+    }
+    
+    private TreeNode insertNode(TreeNode current, int data) {
+        if (current == null) {
+            return new TreeNode(data);
+        }
+        
+        if (data < current.data) {
+            current.leftChild = insertNode(current.leftChild, data);
+        } else if (data > current.data) {
+            current.rightChild = insertNode(current.rightChild, data);
+        }
+        
+        return current;
+    }
+    
+    public boolean find(int data) {
+        return findNode(root, data);
+    }
+    
+    private boolean findNode(TreeNode current, int data) {
+        if (current == null) return false;
+        if (data == current.data) return true;
+        
+        if (data < current.data) {
+            return findNode(current.leftChild, data);
+        } else {
+            return findNode(current.rightChild, data);
+        }
+    }
+    
+    public void displaySorted() {
+        displaySortedNodes(root);
+        System.out.println();
+    }
+    
+    private void displaySortedNodes(TreeNode node) {
+        if (node != null) {
+            displaySortedNodes(node.leftChild);
+            System.out.print(node.data + " ");
+            displaySortedNodes(node.rightChild);
+        }
+    }
+    
+    public void displayStructure() {
+        displayTree(root, "");
+    }
+    
+    private void displayTree(TreeNode node, String indent) {
+        if (node != null) {
+            displayTree(node.rightChild, indent + "    ");
+            System.out.println(indent + node.data);
+            displayTree(node.leftChild, indent + "    ");
+        }
+    }
+
+    public static void main(String[] args) {
+        BinaryTree tree = new BinaryTree();
+        
+        tree.insert(50);
+        tree.insert(30);
+        tree.insert(70);
+        tree.insert(20);
+        tree.insert(40);
+        tree.insert(60);
+        tree.insert(80);
+        
+        System.out.println("Структура дерева:");
+        tree.displayStructure();
+        
+        System.out.println("\nСортированный вывод:");
+        tree.displaySorted();
+        
+        System.out.println("\nПроверка наличия:");
+        System.out.println("40 в дереве? " + tree.find(40));
+        System.out.println("90 в дереве? " + tree.find(90));
+    }
+}
