@@ -1,0 +1,81 @@
+public class Queue {
+    private int head;
+    private int tail;
+    private int currentSize;
+    private int[] elements;
+    private static final int START_CAPACITY = 10;
+
+    public Queue() {
+        this.elements = new int[START_CAPACITY];
+        this.head = 0;
+        this.tail = -1;
+        this.currentSize = 0;
+    }
+
+    public void enqueue(int value) {
+        if (currentSize == elements.length) {
+            increaseCapacity();
+        }
+        tail = (tail + 1) % elements.length;
+        elements[tail] = value;
+        currentSize++;
+    }
+
+    public int dequeue() {
+        if (isEmpty()) {
+            System.out.println("Queue is empty!");
+            return -1;
+        }
+        int value = elements[head];
+        head = (head + 1) % elements.length;
+        currentSize--;
+        return value;
+    }
+
+    public boolean isEmpty() {
+        return currentSize == 0;
+    }
+
+    public int peek() {
+        if (isEmpty()) {
+            System.out.println("Queue is empty!");
+            return -1;
+        }
+        return elements[head];
+    }
+
+    public int getSize() {
+        return currentSize;
+    }
+
+    private void increaseCapacity() {
+        int newCapacity = elements.length * 2;
+        int[] newArray = new int[newCapacity];
+        for (int i = 0; i < currentSize; i++) {
+            newArray[i] = elements[(head + i) % elements.length];
+        }
+        elements = newArray;
+        head = 0;
+        tail = currentSize - 1;
+    }
+
+    public static void main(String[] args) {
+        Queue q = new Queue();
+        
+        q.enqueue(5);
+        q.enqueue(15);
+        q.enqueue(25);
+        
+        System.out.println("Size: " + q.getSize());
+        System.out.println("Front: " + q.peek());
+        
+        System.out.println("Dequeued: " + q.dequeue());
+        System.out.println("Dequeued: " + q.dequeue());
+        
+        System.out.println("Size after dequeue: " + q.getSize());
+        
+        while (!q.isEmpty()) {
+            System.out.println("Remaining: " + q.dequeue());
+        }
+    }
+}
