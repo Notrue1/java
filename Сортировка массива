@@ -1,76 +1,99 @@
-import random
-import time
+import java.util.Arrays;
+import java.util.Random;
 
-def swap(items, left, right):
-    if left != right:
-        items[left], items[right] = items[right], items[left]
+public class SortTest {
 
-def bubble_sort(items):
-    """Пузырьковая сортировка (O(n²))"""
-    swapped = True
-    while swapped:
-        swapped = False
-        for i in range(1, len(items)):
-            if items[i - 1] > items[i]:
-                swap(items, i - 1, i)
-                swapped = True
+    private static final Random rand = new Random();
 
-def quicksort(items, left, right):
-    """Рекурсивная часть быстрой сортировки"""
-    if left < right:
-        pivot_index = random.randint(left, right)          # случайный pivot
-        new_pivot = partition(items, left, right, pivot_index)
-        quicksort(items, left, new_pivot - 1)
-        quicksort(items, new_pivot + 1, right)
+    private static void swap(int[] items, int left, int right) {
+        if (left != right) {
+            int temp = items[left];
+            items[left] = items[right];
+            items[right] = temp;
+        }
+    }
 
-def partition(items, left, right, pivot_index):
-    """Разделение (partition) для быстрой сортировки"""
-    pivot_value = items[pivot_index]
-    swap(items, pivot_index, right)
-    store_index = left
-    for i in range(left, right):
-        if items[i] < pivot_value:
-            swap(items, i, store_index)
-            store_index += 1
-    swap(items, store_index, right)
-    return store_index
+    // ====================== ПУЗЫРЬКОВАЯ СОРТИРОВКА ======================
+    private static void bubbleSort(int[] items) {
+        boolean swapped;
+        do {
+            swapped = false;
+            for (int i = 1; i < items.length; i++) {
+                if (items[i - 1] > items[i]) {
+                    swap(items, i - 1, i);
+                    swapped = true;
+                }
+            }
+        } while (swapped);
+    }
 
-def quick_sort(items):
-    """Быстрая сортировка (среднее O(n log n))"""
-    if len(items) > 0:
-        quicksort(items, 0, len(items) - 1)
+    // ====================== БЫСТРАЯ СОРТИРОВКА ======================
+    private static void quickSort(int[] items) {
+        if (items.length > 0) {
+            quicksort(items, 0, items.length - 1);
+        }
+    }
 
-def test_sorting(size):
-    """Тестирование + измерение времени"""
-    arr = [random.randint(0, 100000) for _ in range(size)]
-    
-    # Пузырьковая
-    arr_b = arr[:]
-    start = time.perf_counter()
-    bubble_sort(arr_b)
-    bubble_time = time.perf_counter() - start
-    
-    # Быстрая
-    arr_q = arr[:]
-    start = time.perf_counter()
-    quick_sort(arr_q)
-    quick_time = time.perf_counter() - start
-    
-    # Проверка корректности
-    sorted_arr = sorted(arr)
-    assert arr_b == sorted_arr, "Bubble sort ошибка!"
-    assert arr_q == sorted_arr, "Quick sort ошибка!"
-    
-    return bubble_time, quick_time
+    private static void quicksort(int[] items, int left, int right) {
+        if (left < right) {
+            int pivotIndex = rand.nextInt(right - left + 1) + left;  // случайный pivot
+            int newPivot = partition(items, left, right, pivotIndex);
+            quicksort(items, left, newPivot - 1);
+            quicksort(items, newPivot + 1, right);
+        }
+    }
 
-# ========================= ЗАПУСК =========================
-print("=== Результаты сортировки ===")
-print("Размер 100:")
-b100, q100 = test_sorting(100)
-print(f"Пузырьковая: {b100:.6f} сек")
-print(f"Быстрая:     {q100:.6f} сек")
+    private static int partition(int[] items, int left, int right, int pivotIndex) {
+        int pivotValue = items[pivotIndex];
+        swap(items, pivotIndex, right);
+        int storeIndex = left;
+        for (int i = left; i < right; i++) {
+            if (items[i] < pivotValue) {
+                swap(items, i, storeIndex);
+                storeIndex++;
+            }
+        }
+        swap(items, storeIndex, right);
+        return storeIndex;
+    }
 
-print("\nРазмер 10000:")
-b10000, q10000 = test_sorting(10000)
-print(f"Пузырьковая: {b10000:.6f} сек")
-print(f"Быстрая:     {q10000:.6f} сек")
+    // ====================== ИЗМЕРЕНИЕ ВРЕМЕНИ ======================
+    private static double measureTime(Runnable sortFunc) {
+        long start = System.nanoTime();
+        sortFunc.run();
+        long end = System.nanoTime();
+        return (end - start) / 1_000_000_000.0;
+    }
+
+    // ====================== ТЕСТ ======================
+    private static void test(int size) {
+        int[] arr = new int[size];
+        for (int i = 0; i < size; i++) {
+            arr[i] = rand.nextInt(100001);
+        }
+
+        // Пузырьковая
+        int[] arrB = Arrays.copyOf(arr, size);
+        double bTime = measureTime(() -> bubbleSort(arrB));
+
+        // Быстрая
+        int[] arrQ = Arrays.copyOf(arr, size);
+        double qTime = measureTime(() -> quickSort(arrQ));
+
+        // Проверка корректности
+        int[] sorted = Arrays.copyOf(arr, size);
+        Arrays.sort(sorted);
+        boolean correctB = Arrays.equals(arrB, sorted);
+        boolean correctQ = Arrays.equals(arrQ, sorted);
+
+        System.out.printf("Размер %d:\n", size);
+        System.out.printf("Пузырьковая: %.6f сек (%s)\n", bTime, correctB ? "OK" : "ERROR");
+        System.out.printf("Быстрая:     %.6f сек (%s)\n\n", qTime, correctQ ? "OK" : "ERROR");
+    }
+
+    public static void main(String[] args) {
+        System.out.println("=== Результаты сортировки (Java) ===");
+        test(100);
+        test(10000);
+    }
+}
