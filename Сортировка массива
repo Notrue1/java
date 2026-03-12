@@ -1,0 +1,76 @@
+import random
+import time
+
+def swap(items, left, right):
+    if left != right:
+        items[left], items[right] = items[right], items[left]
+
+def bubble_sort(items):
+    """Пузырьковая сортировка (O(n²))"""
+    swapped = True
+    while swapped:
+        swapped = False
+        for i in range(1, len(items)):
+            if items[i - 1] > items[i]:
+                swap(items, i - 1, i)
+                swapped = True
+
+def quicksort(items, left, right):
+    """Рекурсивная часть быстрой сортировки"""
+    if left < right:
+        pivot_index = random.randint(left, right)          # случайный pivot
+        new_pivot = partition(items, left, right, pivot_index)
+        quicksort(items, left, new_pivot - 1)
+        quicksort(items, new_pivot + 1, right)
+
+def partition(items, left, right, pivot_index):
+    """Разделение (partition) для быстрой сортировки"""
+    pivot_value = items[pivot_index]
+    swap(items, pivot_index, right)
+    store_index = left
+    for i in range(left, right):
+        if items[i] < pivot_value:
+            swap(items, i, store_index)
+            store_index += 1
+    swap(items, store_index, right)
+    return store_index
+
+def quick_sort(items):
+    """Быстрая сортировка (среднее O(n log n))"""
+    if len(items) > 0:
+        quicksort(items, 0, len(items) - 1)
+
+def test_sorting(size):
+    """Тестирование + измерение времени"""
+    arr = [random.randint(0, 100000) for _ in range(size)]
+    
+    # Пузырьковая
+    arr_b = arr[:]
+    start = time.perf_counter()
+    bubble_sort(arr_b)
+    bubble_time = time.perf_counter() - start
+    
+    # Быстрая
+    arr_q = arr[:]
+    start = time.perf_counter()
+    quick_sort(arr_q)
+    quick_time = time.perf_counter() - start
+    
+    # Проверка корректности
+    sorted_arr = sorted(arr)
+    assert arr_b == sorted_arr, "Bubble sort ошибка!"
+    assert arr_q == sorted_arr, "Quick sort ошибка!"
+    
+    return bubble_time, quick_time
+
+# ========================= ЗАПУСК =========================
+print("=== Результаты сортировки ===")
+print("Размер 100:")
+b100, q100 = test_sorting(100)
+print(f"Пузырьковая: {b100:.6f} сек")
+print(f"Быстрая:     {q100:.6f} сек")
+
+print("\nРазмер 10000:")
+b10000, q10000 = test_sorting(10000)
+print(f"Пузырьковая: {b10000:.6f} сек")
+print(f"Быстрая:     {q10000:.6f} сек")
